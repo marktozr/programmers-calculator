@@ -1,4 +1,4 @@
-const CACHE_NAME = "programmers-calculator-v2";
+const CACHE_NAME = "programmers-calculator-v3";
 const ASSETS = [
   "./",
   "./index.html",
@@ -14,7 +14,7 @@ const ASSETS = [
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)),
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)).then(() => self.skipWaiting()),
   );
 });
 
@@ -24,7 +24,7 @@ self.addEventListener("activate", (event) => {
       cacheNames
         .filter((cacheName) => cacheName !== CACHE_NAME)
         .map((cacheName) => caches.delete(cacheName)),
-    )),
+    )).then(() => self.clients.claim()),
   );
 });
 
@@ -33,23 +33,27 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
+  const requestUrl = new URL(event.request.url);
+  const isSameOrigin = requestUrl.origin === self.location.origin;
+
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-
-      return fetch(event.request).then((networkResponse) => {
-        if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== "basic") {
-          return networkResponse;
-        }
-
+    fetch(event.request).then((networkResponse) => {
+      if (networkResponse && networkResponse.status === 200 && networkResponse.type === "basic" && isSameOrigin) {
         const responseClone = networkResponse.clone();
         caches.open(CACHE_NAME).then((cache) => {
           cache.put(event.request, responseClone);
         });
-        return networkResponse;
-      });
+      }
+      return networkResponse;
+    }).catch(async () => {
+      const cachedResponse = await caches.match(event.request);
+      if (cachedResponse) {
+        return cachedResponse;
+      }
+      if (event.request.mode === "navigate") {
+        return caches.match("./index.html");
+      }
+      throw new Error(`Network request failed for ${event.request.url}`);
     }),
   );
 });

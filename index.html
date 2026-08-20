@@ -71,43 +71,50 @@
 
     <section class="panel keypad-panel" aria-label="Calculator keypad">
       <div class="keypad-grid">
-        <button type="button" class="key utility" data-action="clear-all">AC</button>
-        <button type="button" class="key utility" data-action="clear-entry">CE</button>
-        <button type="button" class="key utility" data-action="backspace">⌫</button>
-        <button type="button" class="key operator" data-action="not">NOT</button>
-        <button type="button" class="key operator" data-op="div">÷</button>
+        <div class="keypad-utilities">
+          <button type="button" class="key utility" data-action="clear-all">AC</button>
+          <button type="button" class="key utility" data-action="clear-entry">CE</button>
+          <button type="button" class="key utility" data-action="backspace">⌫</button>
+          <button type="button" class="key utility" data-action="negate">NEG</button>
+          <button type="button" class="key operator" data-action="not">NOT</button>
+        </div>
 
-        <button type="button" class="key digit" data-digit="A">A</button>
-        <button type="button" class="key digit" data-digit="B">B</button>
-        <button type="button" class="key digit" data-digit="C">C</button>
-        <button type="button" class="key operator" data-op="and">AND</button>
-        <button type="button" class="key operator" data-op="mul">×</button>
+        <div class="keypad-main">
+          <div class="keypad-digits" aria-label="Digit keys">
+            <button type="button" class="key digit" data-digit="7">7</button>
+            <button type="button" class="key digit" data-digit="8">8</button>
+            <button type="button" class="key digit" data-digit="9">9</button>
+            <button type="button" class="key digit" data-digit="A">A</button>
 
-        <button type="button" class="key digit" data-digit="D">D</button>
-        <button type="button" class="key digit" data-digit="E">E</button>
-        <button type="button" class="key digit" data-digit="F">F</button>
-        <button type="button" class="key operator" data-op="or">OR</button>
-        <button type="button" class="key operator" data-op="sub">−</button>
+            <button type="button" class="key digit" data-digit="4">4</button>
+            <button type="button" class="key digit" data-digit="5">5</button>
+            <button type="button" class="key digit" data-digit="6">6</button>
+            <button type="button" class="key digit" data-digit="B">B</button>
 
-        <button type="button" class="key digit" data-digit="7">7</button>
-        <button type="button" class="key digit" data-digit="8">8</button>
-        <button type="button" class="key digit" data-digit="9">9</button>
-        <button type="button" class="key operator" data-op="xor">XOR</button>
-        <button type="button" class="key operator" data-op="add">+</button>
+            <button type="button" class="key digit" data-digit="1">1</button>
+            <button type="button" class="key digit" data-digit="2">2</button>
+            <button type="button" class="key digit" data-digit="3">3</button>
+            <button type="button" class="key digit" data-digit="C">C</button>
 
-        <button type="button" class="key digit" data-digit="4">4</button>
-        <button type="button" class="key digit" data-digit="5">5</button>
-        <button type="button" class="key digit" data-digit="6">6</button>
-        <button type="button" class="key operator" data-op="shl">&lt;&lt;</button>
-        <button type="button" class="key operator tall" data-action="equals">=</button>
+            <button type="button" class="key digit zero" data-digit="0">0</button>
+            <button type="button" class="key digit" data-digit="D">D</button>
+            <button type="button" class="key digit" data-digit="E">E</button>
+            <button type="button" class="key digit" data-digit="F">F</button>
+          </div>
+        </div>
 
-        <button type="button" class="key digit" data-digit="1">1</button>
-        <button type="button" class="key digit" data-digit="2">2</button>
-        <button type="button" class="key digit" data-digit="3">3</button>
-        <button type="button" class="key operator" data-op="shr">&gt;&gt;</button>
-        <button type="button" class="key utility" data-action="negate">NEG</button>
-
-        <button type="button" class="key digit wide" data-digit="0">0</button>
+        <div class="keypad-operators" aria-label="Operator keys">
+          <button type="button" class="key operator" data-op="div">÷</button>
+          <button type="button" class="key operator" data-op="mul">×</button>
+          <button type="button" class="key operator" data-op="sub">−</button>
+          <button type="button" class="key operator" data-op="add">+</button>
+          <button type="button" class="key operator" data-op="and">AND</button>
+          <button type="button" class="key operator" data-op="or">OR</button>
+          <button type="button" class="key operator" data-op="xor">XOR</button>
+          <button type="button" class="key operator" data-op="shl">&lt;&lt;</button>
+          <button type="button" class="key operator" data-op="shr">&gt;&gt;</button>
+          <button type="button" class="key operator" data-action="equals">=</button>
+        </div>
       </div>
     </section>
   </main>

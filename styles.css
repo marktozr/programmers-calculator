@@ -177,8 +177,26 @@ select:focus {
 
 .keypad-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 0.7rem;
+}
+
+.keypad-utilities,
+.keypad-digits,
+.keypad-operators {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.keypad-utilities {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.keypad-digits {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.keypad-operators {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .key {
@@ -211,23 +229,36 @@ select:focus {
   cursor: not-allowed;
 }
 
-.wide,
-.tall {
-  grid-column: span 1;
-  grid-row: span 1;
+.keypad-main {
+  display: contents;
 }
 
-@media (min-width: 64rem) {
+@media (min-width: 48rem) {
   .keypad-grid {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 2fr) minmax(16rem, 1fr);
+    align-items: start;
   }
 
-  .wide {
-    grid-column: span 2;
+  .keypad-utilities {
+    grid-column: 1 / -1;
   }
 
-  .tall {
-    grid-row: span 2;
+  .keypad-main {
+    display: block;
+  }
+
+  .keypad-grid {
+    gap: 1rem;
+  }
+
+  .keypad-main,
+  .keypad-operators {
+    align-self: start;
+  }
+
+  .keypad-operators {
+    height: 100%;
+    align-content: start;
   }
 }
 
