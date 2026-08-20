@@ -1,0 +1,238 @@
+:root {
+  color-scheme: dark;
+  --bg: #030712;
+  --panel: #111827;
+  --panel-alt: #1f2937;
+  --border: #374151;
+  --text: #f9fafb;
+  --muted: #9ca3af;
+  --accent: #22c55e;
+  --accent-strong: #16a34a;
+  --danger: #f87171;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top, rgba(34, 197, 94, 0.15), transparent 30%),
+    var(--bg);
+  color: var(--text);
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+.app-shell {
+  width: min(100%, 68rem);
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.app-header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.eyebrow {
+  margin: 0 0 0.35rem;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.75rem;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(1.8rem, 4vw, 2.7rem);
+}
+
+.panel {
+  background: rgba(17, 24, 39, 0.9);
+  border: 1px solid rgba(55, 65, 81, 0.8);
+  border-radius: 1rem;
+  padding: 1rem;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+.controls-panel {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 1rem;
+  align-items: end;
+  margin-bottom: 1rem;
+}
+
+.control-group,
+.toggle {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.control-label {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.segmented {
+  display: inline-grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.segment,
+.ghost-button,
+.key,
+select,
+.value-card input {
+  border: 1px solid var(--border);
+  border-radius: 0.8rem;
+  background: var(--panel-alt);
+  color: var(--text);
+}
+
+.segment,
+.ghost-button,
+.key {
+  cursor: pointer;
+}
+
+.segment,
+.ghost-button,
+select {
+  min-height: 2.75rem;
+  padding: 0.65rem 0.9rem;
+}
+
+.segment.is-active {
+  border-color: var(--accent);
+  background: rgba(34, 197, 94, 0.18);
+}
+
+.toggle {
+  align-self: center;
+  grid-auto-flow: column;
+  justify-content: start;
+  gap: 0.65rem;
+}
+
+.display-panel {
+  margin-bottom: 1rem;
+}
+
+.value-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 0.8rem;
+}
+
+.value-card {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.value-card span {
+  color: var(--muted);
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+}
+
+.value-card input {
+  width: 100%;
+  min-height: 3.5rem;
+  padding: 0.8rem 0.95rem;
+  font-family: "JetBrains Mono", "Fira Code", monospace;
+  font-size: 1.05rem;
+}
+
+.value-card input:focus,
+.segment:focus,
+.ghost-button:focus,
+.key:focus,
+select:focus {
+  outline: 2px solid rgba(34, 197, 94, 0.45);
+  outline-offset: 2px;
+}
+
+.status-line {
+  margin: 0.9rem 0 0;
+  min-height: 1.4rem;
+  color: var(--muted);
+}
+
+.status-line.is-error {
+  color: var(--danger);
+}
+
+.keypad-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.7rem;
+}
+
+.key {
+  min-height: 3.25rem;
+  padding: 0.9rem;
+  font-weight: 600;
+}
+
+.digit {
+  background: #172554;
+}
+
+.operator {
+  background: #1e3a8a;
+}
+
+.utility,
+.ghost-button {
+  background: #1f2937;
+}
+
+.key:hover,
+.segment:hover,
+.ghost-button:hover {
+  border-color: #6b7280;
+}
+
+.key:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+.wide {
+  grid-column: span 2;
+}
+
+.tall {
+  grid-row: span 2;
+}
+
+.hidden {
+  display: none;
+}
+
+@media (max-width: 42rem) {
+  .keypad-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .tall {
+    grid-row: span 1;
+  }
+
+  .wide {
+    grid-column: span 1;
+  }
+}

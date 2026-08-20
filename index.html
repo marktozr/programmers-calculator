@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#111827">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.svg" type="image/svg+xml">
+  <title>Programmer's Calculator</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="app-header">
+      <div>
+        <p class="eyebrow">Offline-ready PWA</p>
+        <h1>Programmer's Calculator</h1>
+      </div>
+      <button id="install-button" class="ghost-button hidden" type="button">Install</button>
+    </header>
+
+    <section class="panel controls-panel" aria-label="Calculator settings">
+      <div class="control-group">
+        <span class="control-label">Input base</span>
+        <div class="segmented" id="base-selector" role="tablist" aria-label="Select input base">
+          <button type="button" class="segment is-active" data-base="hex">HEX</button>
+          <button type="button" class="segment" data-base="dec">DEC</button>
+          <button type="button" class="segment" data-base="oct">OCT</button>
+          <button type="button" class="segment" data-base="bin">BIN</button>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label class="control-label" for="word-size">Word size</label>
+        <select id="word-size">
+          <option value="8">8-bit</option>
+          <option value="16">16-bit</option>
+          <option value="32" selected>32-bit</option>
+          <option value="64">64-bit</option>
+        </select>
+      </div>
+
+      <label class="toggle">
+        <input id="signed-mode" type="checkbox">
+        <span>Signed decimal mode</span>
+      </label>
+    </section>
+
+    <section class="panel display-panel" aria-label="Converted values">
+      <div class="value-grid">
+        <label class="value-card">
+          <span>HEX</span>
+          <input id="hex-value" data-base="hex" inputmode="text" autocomplete="off" spellcheck="false">
+        </label>
+        <label class="value-card">
+          <span>DEC</span>
+          <input id="dec-value" data-base="dec" inputmode="numeric" autocomplete="off" spellcheck="false">
+        </label>
+        <label class="value-card">
+          <span>OCT</span>
+          <input id="oct-value" data-base="oct" inputmode="numeric" autocomplete="off" spellcheck="false">
+        </label>
+        <label class="value-card">
+          <span>BIN</span>
+          <input id="bin-value" data-base="bin" inputmode="numeric" autocomplete="off" spellcheck="false">
+        </label>
+      </div>
+      <p id="status-line" class="status-line" aria-live="polite"></p>
+    </section>
+
+    <section class="panel keypad-panel" aria-label="Calculator keypad">
+      <div class="keypad-grid">
+        <button type="button" class="key utility" data-action="clear-all">AC</button>
+        <button type="button" class="key utility" data-action="clear-entry">CE</button>
+        <button type="button" class="key utility" data-action="backspace">⌫</button>
+        <button type="button" class="key operator" data-action="not">NOT</button>
+        <button type="button" class="key operator" data-op="div">÷</button>
+
+        <button type="button" class="key digit" data-digit="A">A</button>
+        <button type="button" class="key digit" data-digit="B">B</button>
+        <button type="button" class="key digit" data-digit="C">C</button>
+        <button type="button" class="key operator" data-op="and">AND</button>
+        <button type="button" class="key operator" data-op="mul">×</button>
+
+        <button type="button" class="key digit" data-digit="D">D</button>
+        <button type="button" class="key digit" data-digit="E">E</button>
+        <button type="button" class="key digit" data-digit="F">F</button>
+        <button type="button" class="key operator" data-op="or">OR</button>
+        <button type="button" class="key operator" data-op="sub">−</button>
+
+        <button type="button" class="key digit" data-digit="7">7</button>
+        <button type="button" class="key digit" data-digit="8">8</button>
+        <button type="button" class="key digit" data-digit="9">9</button>
+        <button type="button" class="key operator" data-op="xor">XOR</button>
+        <button type="button" class="key operator" data-op="add">+</button>
+
+        <button type="button" class="key digit" data-digit="4">4</button>
+        <button type="button" class="key digit" data-digit="5">5</button>
+        <button type="button" class="key digit" data-digit="6">6</button>
+        <button type="button" class="key operator" data-op="shl">&lt;&lt;</button>
+        <button type="button" class="key operator tall" data-action="equals">=</button>
+
+        <button type="button" class="key digit" data-digit="1">1</button>
+        <button type="button" class="key digit" data-digit="2">2</button>
+        <button type="button" class="key digit" data-digit="3">3</button>
+        <button type="button" class="key operator" data-op="shr">&gt;&gt;</button>
+        <button type="button" class="key utility" data-action="negate">NEG</button>
+
+        <button type="button" class="key digit wide" data-digit="0">0</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

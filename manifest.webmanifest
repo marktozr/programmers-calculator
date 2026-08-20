@@ -1,0 +1,24 @@
+{
+  "name": "Programmer's Calculator",
+  "short_name": "Prog Calc",
+  "description": "An installable programmers calculator with radix conversion, bitwise operations, and offline support.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#030712",
+  "theme_color": "#111827",
+  "lang": "en",
+  "icons": [
+    {
+      "src": "icons/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
