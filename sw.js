@@ -1,12 +1,15 @@
-const CACHE_NAME = "programmers-calculator-v1";
+const CACHE_NAME = "programmers-calculator-v2";
 const ASSETS = [
   "./",
   "./index.html",
   "./styles.css",
   "./app.js",
   "./manifest.webmanifest",
+  "./icons/apple-touch-icon.png",
   "./icons/icon-192.svg",
   "./icons/icon-512.svg",
+  "./icons/icon-192.png",
+  "./icons/icon-512.png",
 ];
 
 self.addEventListener("install", (event) => {
