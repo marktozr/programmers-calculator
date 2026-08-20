@@ -177,7 +177,7 @@ select:focus {
 
 .keypad-grid {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 0.7rem;
 }
 
@@ -211,28 +211,26 @@ select:focus {
   cursor: not-allowed;
 }
 
-.wide {
-  grid-column: span 2;
+.wide,
+.tall {
+  grid-column: span 1;
+  grid-row: span 1;
 }
 
-.tall {
-  grid-row: span 2;
+@media (min-width: 64rem) {
+  .keypad-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .wide {
+    grid-column: span 2;
+  }
+
+  .tall {
+    grid-row: span 2;
+  }
 }
 
 .hidden {
   display: none;
-}
-
-@media (max-width: 42rem) {
-  .keypad-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-
-  .tall {
-    grid-row: span 1;
-  }
-
-  .wide {
-    grid-column: span 1;
-  }
 }
