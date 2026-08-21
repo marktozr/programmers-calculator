@@ -229,13 +229,14 @@ select:focus {
   cursor: not-allowed;
 }
 
-.keypad-main {
-  display: contents;
+.keypad-body {
+  display: grid;
+  gap: 0.7rem;
 }
 
 @media (min-width: 48rem) {
   .keypad-grid {
-    grid-template-columns: minmax(0, 2fr) minmax(16rem, 1fr);
+    grid-template-columns: minmax(0, 2fr) minmax(14rem, 1fr);
     align-items: start;
   }
 
@@ -243,22 +244,18 @@ select:focus {
     grid-column: 1 / -1;
   }
 
-  .keypad-main {
-    display: block;
-  }
-
-  .keypad-grid {
+  .keypad-body {
+    grid-template-columns: minmax(0, 1fr) minmax(14rem, 18rem);
     gap: 1rem;
   }
 
-  .keypad-main,
   .keypad-operators {
     align-self: start;
   }
 
   .keypad-operators {
-    height: 100%;
     align-content: start;
+    grid-auto-rows: minmax(3.25rem, auto);
   }
 }
 
