@@ -1,9 +1,9 @@
-const CACHE_NAME = "programmers-calculator-v9";
+const CACHE_NAME = "programmers-calculator-v10";
 const ASSETS = [
   "./",
   "./index.html",
-  "./styles.css?v=9",
-  "./app.js?v=9",
+  "./styles.css?v=10",
+  "./app.js?v=10",
   "./manifest.webmanifest",
   "./icons/apple-touch-icon.png",
   "./icons/icon-192.svg",

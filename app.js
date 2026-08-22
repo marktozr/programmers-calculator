@@ -30,7 +30,11 @@ const digitButtons = Array.from(document.querySelectorAll("[data-digit]"));
 let deferredInstallPrompt = null;
 
 // TEMPORARY DIAGNOSTICS for iOS rapid-tap investigation — remove once resolved.
-const diag = { ts: 0, pd: 0, cl: 0, ap: 0 };
+// When true, appendDigit only counts the call and skips all state/render work,
+// to test whether the synchronous render()/fitValueText() reflow is what's
+// causing WebKit to drop subsequent touches.
+const DIAG_STUB_APPEND = true;
+const diag = { ts: 0, pd: 0, cl: 0, ap: 0, top: null, topMin: null, topMax: null };
 const diagEl = document.createElement("div");
 diagEl.id = "diag";
 diagEl.style.cssText =
@@ -38,10 +42,17 @@ diagEl.style.cssText =
   "font:12px/1.4 monospace;padding:4px 8px;white-space:pre;pointer-events:none;";
 document.body.prepend(diagEl);
 function paintDiag() {
-  diagEl.textContent = `ts${diag.ts} pd${diag.pd} cl${diag.cl} ap${diag.ap}`;
+  const topText = diag.topMin === null ? "-" : `${diag.topMin.toFixed(1)}..${diag.topMax.toFixed(1)}`;
+  diagEl.textContent = `ts${diag.ts} pd${diag.pd} cl${diag.cl} ap${diag.ap} stub${DIAG_STUB_APPEND ? 1 : 0} top${topText}`;
 }
 window.addEventListener("touchstart", () => { diag.ts++; paintDiag(); }, { passive: true, capture: true });
-window.addEventListener("pointerdown", () => { diag.pd++; paintDiag(); }, { passive: true, capture: true });
+window.addEventListener("pointerdown", () => {
+  diag.pd++;
+  const rectTop = keypad.getBoundingClientRect().top;
+  diag.topMin = diag.topMin === null ? rectTop : Math.min(diag.topMin, rectTop);
+  diag.topMax = diag.topMax === null ? rectTop : Math.max(diag.topMax, rectTop);
+  paintDiag();
+}, { passive: true, capture: true });
 window.addEventListener("click", () => { diag.cl++; paintDiag(); }, { passive: true, capture: true });
 paintDiag();
 
@@ -188,6 +199,9 @@ function updateBuffer(rawValue, baseKey) {
 function appendDigit(digit) {
   diag.ap++;
   paintDiag();
+  if (DIAG_STUB_APPEND) {
+    return;
+  }
   if (state.awaitingNextInput) {
     beginNewInput();
   }
