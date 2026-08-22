@@ -29,6 +29,22 @@ const digitButtons = Array.from(document.querySelectorAll("[data-digit]"));
 
 let deferredInstallPrompt = null;
 
+// TEMPORARY DIAGNOSTICS for iOS rapid-tap investigation — remove once resolved.
+const diag = { ts: 0, pd: 0, cl: 0, ap: 0 };
+const diagEl = document.createElement("div");
+diagEl.id = "diag";
+diagEl.style.cssText =
+  "position:fixed;top:0;left:0;right:0;z-index:9999;background:#000;color:#0f0;" +
+  "font:12px/1.4 monospace;padding:4px 8px;white-space:pre;pointer-events:none;";
+document.body.prepend(diagEl);
+function paintDiag() {
+  diagEl.textContent = `ts${diag.ts} pd${diag.pd} cl${diag.cl} ap${diag.ap}`;
+}
+window.addEventListener("touchstart", () => { diag.ts++; paintDiag(); }, { passive: true, capture: true });
+window.addEventListener("pointerdown", () => { diag.pd++; paintDiag(); }, { passive: true, capture: true });
+window.addEventListener("click", () => { diag.cl++; paintDiag(); }, { passive: true, capture: true });
+paintDiag();
+
 function maskForWordSize() {
   return (1n << BigInt(state.wordSize)) - 1n;
 }
@@ -170,6 +186,8 @@ function updateBuffer(rawValue, baseKey) {
 }
 
 function appendDigit(digit) {
+  diag.ap++;
+  paintDiag();
   if (state.awaitingNextInput) {
     beginNewInput();
   }
