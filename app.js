@@ -23,9 +23,7 @@ const wordSizeSelect = document.getElementById("word-size");
 const signedCheckbox = document.getElementById("signed-mode");
 const statusLine = document.getElementById("status-line");
 const installButton = document.getElementById("install-button");
-const inputs = Object.fromEntries(
-  Array.from(document.querySelectorAll(".value-card input[data-base]")).map((input) => [input.dataset.base, input]),
-);
+const valueInput = document.getElementById("value-display");
 const keypad = document.querySelector(".keypad-grid");
 const digitButtons = Array.from(document.querySelectorAll("[data-digit]"));
 
@@ -100,12 +98,24 @@ function refreshStatus() {
   statusLine.classList.toggle("is-error", state.messageIsError);
 }
 
-function render() {
-  for (const [baseKey, input] of Object.entries(inputs)) {
-    input.value = baseKey === state.inputBase && !state.awaitingNextInput
-      ? state.inputBuffer
-      : formatValue(state.currentValue, baseKey);
+function fitValueText(input) {
+  const overflowThreshold = 16;
+  const minFontRem = 0.8;
+  const maxFontRem = 1.4;
+  const length = input.value.length;
+  if (length <= overflowThreshold) {
+    input.style.fontSize = "";
+    return;
   }
+  const shrunk = maxFontRem - (length - overflowThreshold) * 0.025;
+  input.style.fontSize = `${Math.max(minFontRem, shrunk)}rem`;
+}
+
+function render() {
+  valueInput.value = state.awaitingNextInput
+    ? formatValue(state.currentValue, state.inputBase)
+    : state.inputBuffer;
+  fitValueText(valueInput);
 
   for (const button of Array.from(baseSelector.querySelectorAll("[data-base]"))) {
     button.classList.toggle("is-active", button.dataset.base === state.inputBase);
@@ -302,7 +312,7 @@ function handleKeyboard(event) {
 
   const key = event.key.toUpperCase();
   const isDigit = BASES[state.inputBase].digits.includes(key);
-  const isInputFocused = Object.values(inputs).includes(document.activeElement);
+  const isInputFocused = document.activeElement === valueInput;
 
   if (isInputFocused) {
     if (key === "ENTER") {
@@ -376,10 +386,7 @@ signedCheckbox.addEventListener("change", () => {
   render();
 });
 
-for (const input of Object.values(inputs)) {
-  input.addEventListener("focus", () => changeBase(input.dataset.base));
-  input.addEventListener("input", () => updateBuffer(input.value, input.dataset.base));
-}
+valueInput.addEventListener("input", () => updateBuffer(valueInput.value, state.inputBase));
 
 keypad.addEventListener("click", (event) => {
   const button = event.target.closest("button");

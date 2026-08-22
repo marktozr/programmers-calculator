@@ -20,17 +20,76 @@
       <button id="install-button" class="ghost-button hidden" type="button">Install</button>
     </header>
 
-    <section class="panel controls-panel" aria-label="Calculator settings">
-      <div class="control-group">
-        <span class="control-label">Input base</span>
-        <div class="segmented" id="base-selector" role="tablist" aria-label="Select input base">
-          <button type="button" class="segment is-active" data-base="hex">HEX</button>
-          <button type="button" class="segment" data-base="dec">DEC</button>
-          <button type="button" class="segment" data-base="oct">OCT</button>
-          <button type="button" class="segment" data-base="bin">BIN</button>
+    <section class="panel display-panel" aria-label="Value display">
+      <div class="value-card">
+        <div class="value-header">
+          <div class="segmented" id="base-selector" role="tablist" aria-label="Select base">
+            <button type="button" class="segment is-active" data-base="hex" role="tab" aria-selected="true">HEX</button>
+            <button type="button" class="segment" data-base="dec" role="tab" aria-selected="false">DEC</button>
+            <button type="button" class="segment" data-base="oct" role="tab" aria-selected="false">OCT</button>
+            <button type="button" class="segment" data-base="bin" role="tab" aria-selected="false">BIN</button>
+          </div>
         </div>
+        <input id="value-display" inputmode="text" autocomplete="off" spellcheck="false" aria-label="Current value">
       </div>
+      <p id="status-line" class="status-line" aria-live="polite"></p>
+    </section>
 
+    <section class="panel keypad-panel" aria-label="Calculator keypad">
+      <div class="keypad-grid">
+        <div class="keypad-row keypad-utilities">
+          <button type="button" class="key utility" data-action="clear-all">AC</button>
+          <button type="button" class="key utility" data-action="clear-entry">CE</button>
+        </div>
+
+        <div class="keypad-row keypad-hex" aria-label="Hex digit keys">
+          <button type="button" class="key digit" data-digit="A">A</button>
+          <button type="button" class="key digit" data-digit="B">B</button>
+          <button type="button" class="key digit" data-digit="C">C</button>
+          <button type="button" class="key digit" data-digit="D">D</button>
+          <button type="button" class="key digit" data-digit="E">E</button>
+          <button type="button" class="key digit" data-digit="F">F</button>
+        </div>
+
+        <div class="keypad-main" aria-label="Digits and basic operators">
+          <button type="button" class="key digit" data-digit="7">7</button>
+          <button type="button" class="key digit" data-digit="8">8</button>
+          <button type="button" class="key digit" data-digit="9">9</button>
+          <button type="button" class="key operator" data-op="div">÷</button>
+
+          <button type="button" class="key digit" data-digit="4">4</button>
+          <button type="button" class="key digit" data-digit="5">5</button>
+          <button type="button" class="key digit" data-digit="6">6</button>
+          <button type="button" class="key operator" data-op="mul">×</button>
+
+          <button type="button" class="key digit" data-digit="1">1</button>
+          <button type="button" class="key digit" data-digit="2">2</button>
+          <button type="button" class="key digit" data-digit="3">3</button>
+          <button type="button" class="key operator" data-op="sub">−</button>
+
+          <button type="button" class="key utility" data-action="negate">NEG</button>
+          <button type="button" class="key digit" data-digit="0">0</button>
+          <button type="button" class="key utility" data-action="backspace">⌫</button>
+          <button type="button" class="key operator" data-op="add">+</button>
+        </div>
+
+        <div class="keypad-row keypad-bitwise" aria-label="Bitwise operators">
+          <button type="button" class="key operator" data-op="and">AND</button>
+          <button type="button" class="key operator" data-op="or">OR</button>
+          <button type="button" class="key operator" data-op="xor">XOR</button>
+          <button type="button" class="key operator" data-action="not">NOT</button>
+        </div>
+
+        <div class="keypad-row keypad-shift" aria-label="Shift operators">
+          <button type="button" class="key operator" data-op="shl">&lt;&lt;</button>
+          <button type="button" class="key operator" data-op="shr">&gt;&gt;</button>
+        </div>
+
+        <button type="button" class="key equals" data-action="equals">=</button>
+      </div>
+    </section>
+
+    <section class="panel controls-panel" aria-label="Calculator settings">
       <div class="control-group">
         <label class="control-label" for="word-size">Word size</label>
         <select id="word-size">
@@ -45,77 +104,6 @@
         <input id="signed-mode" type="checkbox">
         <span>Signed decimal mode</span>
       </label>
-    </section>
-
-    <section class="panel display-panel" aria-label="Converted values">
-      <div class="value-grid">
-        <label class="value-card">
-          <span>HEX</span>
-          <input id="hex-value" data-base="hex" inputmode="text" autocomplete="off" spellcheck="false">
-        </label>
-        <label class="value-card">
-          <span>DEC</span>
-          <input id="dec-value" data-base="dec" inputmode="numeric" autocomplete="off" spellcheck="false">
-        </label>
-        <label class="value-card">
-          <span>OCT</span>
-          <input id="oct-value" data-base="oct" inputmode="numeric" autocomplete="off" spellcheck="false">
-        </label>
-        <label class="value-card">
-          <span>BIN</span>
-          <input id="bin-value" data-base="bin" inputmode="numeric" autocomplete="off" spellcheck="false">
-        </label>
-      </div>
-      <p id="status-line" class="status-line" aria-live="polite"></p>
-    </section>
-
-    <section class="panel keypad-panel" aria-label="Calculator keypad">
-      <div class="keypad-grid">
-        <div class="keypad-utilities">
-          <button type="button" class="key utility" data-action="clear-all">AC</button>
-          <button type="button" class="key utility" data-action="clear-entry">CE</button>
-          <button type="button" class="key utility" data-action="backspace">⌫</button>
-          <button type="button" class="key utility" data-action="negate">NEG</button>
-          <button type="button" class="key operator" data-action="not">NOT</button>
-        </div>
-
-        <div class="keypad-body">
-          <div class="keypad-digits" aria-label="Digit keys">
-            <button type="button" class="key digit" data-digit="7">7</button>
-            <button type="button" class="key digit" data-digit="8">8</button>
-            <button type="button" class="key digit" data-digit="9">9</button>
-            <button type="button" class="key digit" data-digit="A">A</button>
-
-            <button type="button" class="key digit" data-digit="4">4</button>
-            <button type="button" class="key digit" data-digit="5">5</button>
-            <button type="button" class="key digit" data-digit="6">6</button>
-            <button type="button" class="key digit" data-digit="B">B</button>
-
-            <button type="button" class="key digit" data-digit="1">1</button>
-            <button type="button" class="key digit" data-digit="2">2</button>
-            <button type="button" class="key digit" data-digit="3">3</button>
-            <button type="button" class="key digit" data-digit="C">C</button>
-
-            <button type="button" class="key digit zero" data-digit="0">0</button>
-            <button type="button" class="key digit" data-digit="D">D</button>
-            <button type="button" class="key digit" data-digit="E">E</button>
-            <button type="button" class="key digit" data-digit="F">F</button>
-          </div>
-
-          <div class="keypad-operators" aria-label="Operator keys">
-            <button type="button" class="key operator" data-op="div">÷</button>
-            <button type="button" class="key operator" data-op="mul">×</button>
-            <button type="button" class="key operator" data-op="sub">−</button>
-            <button type="button" class="key operator" data-op="add">+</button>
-            <button type="button" class="key operator" data-op="and">AND</button>
-            <button type="button" class="key operator" data-op="or">OR</button>
-            <button type="button" class="key operator" data-op="xor">XOR</button>
-            <button type="button" class="key operator" data-op="shl">&lt;&lt;</button>
-            <button type="button" class="key operator" data-op="shr">&gt;&gt;</button>
-            <button type="button" class="key operator" data-action="equals">=</button>
-          </div>
-        </div>
-      </div>
     </section>
   </main>
 
