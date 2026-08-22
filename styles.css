@@ -53,6 +53,11 @@ select {
   font-size: 0.75rem;
 }
 
+.version-tag {
+  color: var(--muted);
+  letter-spacing: normal;
+}
+
 h1 {
   margin: 0;
   font-size: clamp(1.8rem, 4vw, 2.7rem);
