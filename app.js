@@ -388,11 +388,17 @@ signedCheckbox.addEventListener("change", () => {
 
 valueInput.addEventListener("input", () => updateBuffer(valueInput.value, state.inputBase));
 
-keypad.addEventListener("click", (event) => {
-  const button = event.target.closest("button");
-  if (!button) {
+keypad.addEventListener("pointerdown", (event) => {
+  if (event.button !== 0) {
     return;
   }
+
+  const button = event.target.closest("button");
+  if (!button || button.disabled) {
+    return;
+  }
+
+  event.preventDefault();
 
   if (button.dataset.digit) {
     appendDigit(button.dataset.digit);
