@@ -116,10 +116,6 @@ function render() {
     ? formatValue(state.currentValue, state.inputBase)
     : state.inputBuffer;
   fitValueText(valueInput);
-  // Hex needs the full keyboard for A-F; other bases only need digits, so
-  // they get the numeric keypad (operators still come from a single tap on
-  // the keypad's operator buttons).
-  valueInput.setAttribute("inputmode", state.inputBase === "hex" ? "text" : "numeric");
 
   for (const button of Array.from(baseSelector.querySelectorAll("[data-base]"))) {
     button.classList.toggle("is-active", button.dataset.base === state.inputBase);
@@ -309,23 +305,28 @@ function changeBase(baseKey) {
   render();
 }
 
-const OPERATOR_KEY_MAP = {
-  "+": "add",
-  "-": "sub",
-  "*": "mul",
-  "/": "div",
-  "&": "and",
-  "|": "or",
-  "^": "xor",
-};
-
 function handleKeyboard(event) {
   if (event.ctrlKey || event.metaKey || event.altKey) {
     return;
   }
 
   const key = event.key.toUpperCase();
+  const isDigit = BASES[state.inputBase].digits.includes(key);
   const isInputFocused = document.activeElement === valueInput;
+
+  if (isInputFocused) {
+    if (key === "ENTER") {
+      event.preventDefault();
+      evaluate();
+    }
+    return;
+  }
+
+  if (isDigit) {
+    event.preventDefault();
+    appendDigit(key);
+    return;
+  }
 
   if (key === "ENTER" || key === "=") {
     event.preventDefault();
@@ -333,39 +334,25 @@ function handleKeyboard(event) {
     return;
   }
 
-  // "-" is excluded here so a focused field can still take a literal minus
-  // as the sign of a typed signed-decimal number; it's only treated as
-  // subtraction below, when the field isn't focused.
-  if (key !== "-" && OPERATOR_KEY_MAP[key]) {
-    event.preventDefault();
-    queueBinary(OPERATOR_KEY_MAP[key]);
-    return;
-  }
-
-  if (isInputFocused) {
-    // Digits, "-", and backspace flow through natively into the input's own
-    // editing and reach updateBuffer() via the "input" event below — this is
-    // what lets the iOS on-screen keyboard type fast sequences (and operators,
-    // handled above) without touching the tap keypad at all.
-    return;
-  }
-
-  const isDigit = BASES[state.inputBase].digits.includes(key);
-  if (isDigit) {
-    event.preventDefault();
-    appendDigit(key);
-    return;
-  }
-
-  if (key === "BACKSPACE") {
+  if (key === "BACKSPACE" && !isInputFocused) {
     event.preventDefault();
     backspace();
     return;
   }
 
-  if (OPERATOR_KEY_MAP[key]) {
+  const operatorMap = {
+    "+": "add",
+    "-": "sub",
+    "*": "mul",
+    "/": "div",
+    "&": "and",
+    "|": "or",
+    "^": "xor",
+  };
+
+  if (operatorMap[key]) {
     event.preventDefault();
-    queueBinary(OPERATOR_KEY_MAP[key]);
+    queueBinary(operatorMap[key]);
   }
 }
 
