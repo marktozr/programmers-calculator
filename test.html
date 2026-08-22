@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tap test (normal viewport)</title>
+<link rel="stylesheet" href="styles.css?v=10">
+<style>
+  body { padding: 1rem; font-family: system-ui, sans-serif; color: #f9fafb; background: #030712; }
+  .row { margin-bottom: 2rem; }
+  .count { font: 20px monospace; margin-top: 0.5rem; }
+  #plain-btn {
+    font-size: 1.4rem;
+    padding: 1.2rem 2rem;
+  }
+  .keypad-grid { max-width: 10rem; }
+</style>
+</head>
+<body>
+  <h1>Tap test — normal viewport</h1>
+  <p>Mash each button as fast as you can for ~5 seconds. Compare the two counts.</p>
+
+  <div class="row">
+    <h2>A: plain unstyled button</h2>
+    <button id="plain-btn">TAP</button>
+    <div class="count" id="plain-count">touchstart: 0</div>
+  </div>
+
+  <div class="row">
+    <h2>B: real keypad button clone (styles.css, .key.digit)</h2>
+    <div class="keypad-grid">
+      <button type="button" class="key digit" id="key-btn">4</button>
+    </div>
+    <div class="count" id="key-count">touchstart: 0</div>
+  </div>
+
+  <p><a href="test-locked.html" style="color:#22c55e;">Next: locked-viewport variant &rarr;</a></p>
+
+  <script>
+    function wire(buttonId, countId) {
+      let n = 0;
+      const el = document.getElementById(countId);
+      document.getElementById(buttonId).addEventListener(
+        "touchstart",
+        () => { n++; el.textContent = `touchstart: ${n}`; },
+        { passive: true },
+      );
+    }
+    wire("plain-btn", "plain-count");
+    wire("key-btn", "key-count");
+  </script>
+</body>
+</html>
