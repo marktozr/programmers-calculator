@@ -116,6 +116,10 @@ function render() {
     ? formatValue(state.currentValue, state.inputBase)
     : state.inputBuffer;
   fitValueText(valueInput);
+  // Hex needs the full keyboard for A-F; other bases only need digits, so
+  // they get the numeric keypad (operators still come from a single tap on
+  // the keypad's operator buttons).
+  valueInput.setAttribute("inputmode", state.inputBase === "hex" ? "text" : "numeric");
 
   for (const button of Array.from(baseSelector.querySelectorAll("[data-base]"))) {
     button.classList.toggle("is-active", button.dataset.base === state.inputBase);
