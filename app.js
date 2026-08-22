@@ -29,50 +29,6 @@ const digitButtons = Array.from(document.querySelectorAll("[data-digit]"));
 
 let deferredInstallPrompt = null;
 
-// TEMPORARY DIAGNOSTICS for iOS rapid-tap investigation — remove once resolved.
-// appendDigit runs its normal logic now (stub test already ran). This build
-// adds gap-timing stats (median inter-tap interval + count of outlier gaps
-// >1.7x median) so drops show up as a bimodal distribution instead of relying
-// on a hand count.
-const DIAG_STUB_APPEND = false;
-const diag = { ts: 0, pd: 0, cl: 0, ap: 0, topMin: null, topMax: null, times: [] };
-const diagEl = document.createElement("div");
-diagEl.id = "diag";
-diagEl.style.cssText =
-  "position:fixed;top:0;left:0;right:0;z-index:9999;background:#000;color:#0f0;" +
-  "font:12px/1.4 monospace;padding:4px 8px;white-space:pre;pointer-events:none;";
-document.body.prepend(diagEl);
-function paintDiag() {
-  const topText = diag.topMin === null ? "-" : `${diag.topMin.toFixed(1)}..${diag.topMax.toFixed(1)}`;
-  let gapText = "gaps:-";
-  if (diag.times.length >= 3) {
-    const intervals = [];
-    for (let i = 1; i < diag.times.length; i++) {
-      intervals.push(diag.times[i] - diag.times[i - 1]);
-    }
-    const sorted = [...intervals].sort((a, b) => a - b);
-    const median = sorted[Math.floor(sorted.length / 2)];
-    const outliers = intervals.filter((v) => v > median * 1.7).length;
-    const recent = intervals.slice(-8).map((v) => Math.round(v)).join(",");
-    gapText = `med${median.toFixed(0)} long${outliers} [${recent}]`;
-  }
-  diagEl.textContent = `ts${diag.ts} pd${diag.pd} cl${diag.cl} ap${diag.ap} top${topText} ${gapText}`;
-}
-window.addEventListener("touchstart", () => {
-  diag.ts++;
-  diag.times.push(performance.now());
-  paintDiag();
-}, { passive: true, capture: true });
-window.addEventListener("pointerdown", () => {
-  diag.pd++;
-  const rectTop = keypad.getBoundingClientRect().top;
-  diag.topMin = diag.topMin === null ? rectTop : Math.min(diag.topMin, rectTop);
-  diag.topMax = diag.topMax === null ? rectTop : Math.max(diag.topMax, rectTop);
-  paintDiag();
-}, { passive: true, capture: true });
-window.addEventListener("click", () => { diag.cl++; paintDiag(); }, { passive: true, capture: true });
-paintDiag();
-
 function maskForWordSize() {
   return (1n << BigInt(state.wordSize)) - 1n;
 }
@@ -214,11 +170,6 @@ function updateBuffer(rawValue, baseKey) {
 }
 
 function appendDigit(digit) {
-  diag.ap++;
-  paintDiag();
-  if (DIAG_STUB_APPEND) {
-    return;
-  }
   if (state.awaitingNextInput) {
     beginNewInput();
   }
@@ -354,28 +305,23 @@ function changeBase(baseKey) {
   render();
 }
 
+const OPERATOR_KEY_MAP = {
+  "+": "add",
+  "-": "sub",
+  "*": "mul",
+  "/": "div",
+  "&": "and",
+  "|": "or",
+  "^": "xor",
+};
+
 function handleKeyboard(event) {
   if (event.ctrlKey || event.metaKey || event.altKey) {
     return;
   }
 
   const key = event.key.toUpperCase();
-  const isDigit = BASES[state.inputBase].digits.includes(key);
   const isInputFocused = document.activeElement === valueInput;
-
-  if (isInputFocused) {
-    if (key === "ENTER") {
-      event.preventDefault();
-      evaluate();
-    }
-    return;
-  }
-
-  if (isDigit) {
-    event.preventDefault();
-    appendDigit(key);
-    return;
-  }
 
   if (key === "ENTER" || key === "=") {
     event.preventDefault();
@@ -383,25 +329,39 @@ function handleKeyboard(event) {
     return;
   }
 
-  if (key === "BACKSPACE" && !isInputFocused) {
+  // "-" is excluded here so a focused field can still take a literal minus
+  // as the sign of a typed signed-decimal number; it's only treated as
+  // subtraction below, when the field isn't focused.
+  if (key !== "-" && OPERATOR_KEY_MAP[key]) {
+    event.preventDefault();
+    queueBinary(OPERATOR_KEY_MAP[key]);
+    return;
+  }
+
+  if (isInputFocused) {
+    // Digits, "-", and backspace flow through natively into the input's own
+    // editing and reach updateBuffer() via the "input" event below — this is
+    // what lets the iOS on-screen keyboard type fast sequences (and operators,
+    // handled above) without touching the tap keypad at all.
+    return;
+  }
+
+  const isDigit = BASES[state.inputBase].digits.includes(key);
+  if (isDigit) {
+    event.preventDefault();
+    appendDigit(key);
+    return;
+  }
+
+  if (key === "BACKSPACE") {
     event.preventDefault();
     backspace();
     return;
   }
 
-  const operatorMap = {
-    "+": "add",
-    "-": "sub",
-    "*": "mul",
-    "/": "div",
-    "&": "and",
-    "|": "or",
-    "^": "xor",
-  };
-
-  if (operatorMap[key]) {
+  if (OPERATOR_KEY_MAP[key]) {
     event.preventDefault();
-    queueBinary(operatorMap[key]);
+    queueBinary(OPERATOR_KEY_MAP[key]);
   }
 }
 
