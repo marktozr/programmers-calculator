@@ -30,11 +30,12 @@ const digitButtons = Array.from(document.querySelectorAll("[data-digit]"));
 let deferredInstallPrompt = null;
 
 // TEMPORARY DIAGNOSTICS for iOS rapid-tap investigation — remove once resolved.
-// When true, appendDigit only counts the call and skips all state/render work,
-// to test whether the synchronous render()/fitValueText() reflow is what's
-// causing WebKit to drop subsequent touches.
-const DIAG_STUB_APPEND = true;
-const diag = { ts: 0, pd: 0, cl: 0, ap: 0, top: null, topMin: null, topMax: null };
+// appendDigit runs its normal logic now (stub test already ran). This build
+// adds gap-timing stats (median inter-tap interval + count of outlier gaps
+// >1.7x median) so drops show up as a bimodal distribution instead of relying
+// on a hand count.
+const DIAG_STUB_APPEND = false;
+const diag = { ts: 0, pd: 0, cl: 0, ap: 0, topMin: null, topMax: null, times: [] };
 const diagEl = document.createElement("div");
 diagEl.id = "diag";
 diagEl.style.cssText =
@@ -43,9 +44,25 @@ diagEl.style.cssText =
 document.body.prepend(diagEl);
 function paintDiag() {
   const topText = diag.topMin === null ? "-" : `${diag.topMin.toFixed(1)}..${diag.topMax.toFixed(1)}`;
-  diagEl.textContent = `ts${diag.ts} pd${diag.pd} cl${diag.cl} ap${diag.ap} stub${DIAG_STUB_APPEND ? 1 : 0} top${topText}`;
+  let gapText = "gaps:-";
+  if (diag.times.length >= 3) {
+    const intervals = [];
+    for (let i = 1; i < diag.times.length; i++) {
+      intervals.push(diag.times[i] - diag.times[i - 1]);
+    }
+    const sorted = [...intervals].sort((a, b) => a - b);
+    const median = sorted[Math.floor(sorted.length / 2)];
+    const outliers = intervals.filter((v) => v > median * 1.7).length;
+    const recent = intervals.slice(-8).map((v) => Math.round(v)).join(",");
+    gapText = `med${median.toFixed(0)} long${outliers} [${recent}]`;
+  }
+  diagEl.textContent = `ts${diag.ts} pd${diag.pd} cl${diag.cl} ap${diag.ap} top${topText} ${gapText}`;
 }
-window.addEventListener("touchstart", () => { diag.ts++; paintDiag(); }, { passive: true, capture: true });
+window.addEventListener("touchstart", () => {
+  diag.ts++;
+  diag.times.push(performance.now());
+  paintDiag();
+}, { passive: true, capture: true });
 window.addEventListener("pointerdown", () => {
   diag.pd++;
   const rectTop = keypad.getBoundingClientRect().top;
