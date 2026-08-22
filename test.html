@@ -38,10 +38,18 @@
     <div class="stats" id="key-stats">taps: 0</div>
   </div>
 
+  <div class="row">
+    <h2>C: combined, either button (document-level, ground truth)</h2>
+    <p style="margin:0 0 0.5rem;color:#9ca3af;">Alternate fingers between A and B as fast as you can (left, right, left, right).
+       This counts a touchstart no matter which button it hits.</p>
+    <button class="reset" data-reset="combined">reset</button>
+    <div class="stats" id="combined-stats">taps: 0</div>
+  </div>
+
   <p><a href="test-locked.html" style="color:#22c55e;">Next: locked-viewport variant &rarr;</a></p>
 
   <script>
-    function makeTracker(buttonId, statsId) {
+    function makeTracker(statsId) {
       const el = document.getElementById(statsId);
       let times = [];
 
@@ -65,18 +73,25 @@
           `last gaps (ms): ${recent.join(", ")}`;
       }
 
-      document.getElementById(buttonId).addEventListener(
-        "touchstart",
-        () => { times.push(performance.now()); render(); },
-        { passive: true },
-      );
-      document.querySelector(`[data-reset="${buttonId.replace("-btn", "")}"]`).addEventListener(
-        "click",
-        () => { times = []; render(); },
-      );
+      return {
+        record() { times.push(performance.now()); render(); },
+        reset() { times = []; render(); },
+      };
     }
-    makeTracker("plain-btn", "plain-stats");
-    makeTracker("key-btn", "key-stats");
+
+    const plainTracker = makeTracker("plain-stats");
+    const keyTracker = makeTracker("key-stats");
+    const combinedTracker = makeTracker("combined-stats");
+
+    document.getElementById("plain-btn").addEventListener(
+      "touchstart", () => { plainTracker.record(); combinedTracker.record(); }, { passive: true },
+    );
+    document.getElementById("key-btn").addEventListener(
+      "touchstart", () => { keyTracker.record(); combinedTracker.record(); }, { passive: true },
+    );
+    document.querySelector('[data-reset="plain"]').addEventListener("click", () => plainTracker.reset());
+    document.querySelector('[data-reset="key"]').addEventListener("click", () => keyTracker.reset());
+    document.querySelector('[data-reset="combined"]').addEventListener("click", () => combinedTracker.reset());
   </script>
 </body>
 </html>
