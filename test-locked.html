@@ -8,22 +8,26 @@
 <style>
   body { padding: 1rem; font-family: system-ui, sans-serif; color: #f9fafb; background: #030712; }
   .row { margin-bottom: 2rem; }
-  .count { font: 20px monospace; margin-top: 0.5rem; }
+  .stats { font: 14px/1.5 monospace; margin-top: 0.5rem; white-space: pre-wrap; }
   #plain-btn {
     font-size: 1.4rem;
     padding: 1.2rem 2rem;
   }
   .keypad-grid { max-width: 10rem; }
+  button.reset { font-size: 0.85rem; padding: 0.4rem 0.8rem; margin-top: 0.4rem; }
 </style>
 </head>
 <body>
   <h1>Tap test — locked viewport (zoom disabled)</h1>
-  <p>Same test as before, but with <code>user-scalable=no, maximum-scale=1</code> on this page.</p>
+  <p>Same test as before, but with <code>user-scalable=no, maximum-scale=1</code> on this page.
+     No need to count taps — this reads gaps between taps and flags any that are much
+     longer than the rest (a likely dropped tap).</p>
 
   <div class="row">
     <h2>A: plain unstyled button</h2>
     <button id="plain-btn">TAP</button>
-    <div class="count" id="plain-count">touchstart: 0</div>
+    <button class="reset" data-reset="plain">reset</button>
+    <div class="stats" id="plain-stats">taps: 0</div>
   </div>
 
   <div class="row">
@@ -31,23 +35,49 @@
     <div class="keypad-grid">
       <button type="button" class="key digit" id="key-btn">4</button>
     </div>
-    <div class="count" id="key-count">touchstart: 0</div>
+    <button class="reset" data-reset="key">reset</button>
+    <div class="stats" id="key-stats">taps: 0</div>
   </div>
 
   <p><a href="test.html" style="color:#22c55e;">&larr; Back to normal-viewport variant</a></p>
 
   <script>
-    function wire(buttonId, countId) {
-      let n = 0;
-      const el = document.getElementById(countId);
+    function makeTracker(buttonId, statsId) {
+      const el = document.getElementById(statsId);
+      let times = [];
+
+      function render() {
+        if (times.length < 2) {
+          el.textContent = `taps: ${times.length}`;
+          return;
+        }
+        const intervals = [];
+        for (let i = 1; i < times.length; i++) {
+          intervals.push(times[i] - times[i - 1]);
+        }
+        const sorted = [...intervals].sort((a, b) => a - b);
+        const median = sorted[Math.floor(sorted.length / 2)];
+        const threshold = median * 1.7;
+        const outliers = intervals.filter((v) => v > threshold);
+        const recent = intervals.slice(-12).map((v) => Math.round(v));
+        el.textContent =
+          `taps: ${times.length}   median gap: ${median.toFixed(0)}ms   ` +
+          `long gaps (>1.7x median): ${outliers.length}\n` +
+          `last gaps (ms): ${recent.join(", ")}`;
+      }
+
       document.getElementById(buttonId).addEventListener(
         "touchstart",
-        () => { n++; el.textContent = `touchstart: ${n}`; },
+        () => { times.push(performance.now()); render(); },
         { passive: true },
       );
+      document.querySelector(`[data-reset="${buttonId.replace("-btn", "")}"]`).addEventListener(
+        "click",
+        () => { times = []; render(); },
+      );
     }
-    wire("plain-btn", "plain-count");
-    wire("key-btn", "key-count");
+    makeTracker("plain-btn", "plain-stats");
+    makeTracker("key-btn", "key-stats");
   </script>
 </body>
 </html>
