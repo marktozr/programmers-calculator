@@ -52,6 +52,15 @@
     <div class="stats" id="combined-stats">taps: 0</div>
   </div>
 
+  <div class="row">
+    <h2>D: raw touch/pointer counts (document-level, capture)</h2>
+    <p style="margin:0 0 0.5rem;color:#9ca3af;">Tap button A about 20 times at whatever rate loses half. This logs
+       <code>touches.length</code> / <code>changedTouches.length</code> on every raw event — if a "missing" tap is
+       actually bundled into the previous event, one of those numbers will be &gt;1.</p>
+    <button class="reset" data-reset="raw">reset</button>
+    <div class="stats" id="raw-stats" style="height:6rem;">ts:0 te:0 pd:0 pu:0 cl:0</div>
+  </div>
+
   <p><a href="test-locked.html" style="color:#22c55e;">Next: locked-viewport variant &rarr;</a></p>
 
   <script>
@@ -98,6 +107,31 @@
     document.querySelector('[data-reset="plain"]').addEventListener("click", () => plainTracker.reset());
     document.querySelector('[data-reset="key"]').addEventListener("click", () => keyTracker.reset());
     document.querySelector('[data-reset="combined"]').addEventListener("click", () => combinedTracker.reset());
+
+    const raw = { ts: 0, te: 0, pd: 0, pu: 0, cl: 0, log: [] };
+    const rawEl = document.getElementById("raw-stats");
+    function paintRaw() {
+      rawEl.textContent =
+        `ts:${raw.ts} te:${raw.te} pd:${raw.pd} pu:${raw.pu} cl:${raw.cl}\n` +
+        `last touchstart [touches/changed]: ${raw.log.slice(-15).join(", ")}`;
+    }
+    window.addEventListener("touchstart", (e) => {
+      raw.ts++;
+      raw.log.push(`${e.touches.length}/${e.changedTouches.length}`);
+      paintRaw();
+    }, { capture: true, passive: true });
+    window.addEventListener("touchend", (e) => {
+      raw.te++;
+      paintRaw();
+    }, { capture: true, passive: true });
+    window.addEventListener("pointerdown", () => { raw.pd++; paintRaw(); }, { capture: true, passive: true });
+    window.addEventListener("pointerup", () => { raw.pu++; paintRaw(); }, { capture: true, passive: true });
+    window.addEventListener("click", () => { raw.cl++; paintRaw(); }, { capture: true, passive: true });
+    document.querySelector('[data-reset="raw"]').addEventListener("click", () => {
+      raw.ts = 0; raw.te = 0; raw.pd = 0; raw.pu = 0; raw.cl = 0; raw.log = [];
+      paintRaw();
+    });
+    paintRaw();
   </script>
 </body>
 </html>
